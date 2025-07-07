@@ -323,7 +323,7 @@ public:
   externalVideoPlayer:
     enabled: true
   kurento:
-    wsUrl: https://demo.osbash.com/bbb-webrtc-sfu
+    wsUrl: wss://demo.osbash.com/bbb-webrtc-sfu
     cameraWsOptions:
       # Valid for video-provider. Time (ms) before its WS connection times out
       # and tries to reconnect.
