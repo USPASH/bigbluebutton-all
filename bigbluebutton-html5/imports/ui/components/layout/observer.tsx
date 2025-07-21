@@ -38,6 +38,7 @@ const LayoutObserver: React.FC = () => {
   const sidebarContent = layoutSelectInput((i: Input) => i.sidebarContent);
   const { sidebarContentPanel } = sidebarContent;
 
+  const [layoutIsReady, setLayoutIsReady] = useState(false);
   const [, setEnableResize] = useState(!window.matchMedia(MOBILE_MEDIA).matches);
   const { selectedLayout } = useSettings(SETTINGS.LAYOUT) as { selectedLayout: string };
   const {
@@ -85,7 +86,7 @@ const LayoutObserver: React.FC = () => {
   );
 
   useEffect(() => {
-    if (deviceType !== previousDeviceType) {
+    if (deviceType && deviceType !== previousDeviceType) {
       const Settings = getSettingsSingletonInstance();
       const currentLayout = Settings.layout.selectedLayout;
       if (!isLayoutSupported(deviceType, currentLayout)) {
@@ -213,6 +214,7 @@ const LayoutObserver: React.FC = () => {
   }, [meetingLayout, layoutContextDispatch, layoutType]);
 
   useEffect(() => {
+    if (!deviceType) return;
     const layoutSupported = isLayoutSupported(deviceType, selectedLayout);
     if (layoutSupported) {
       layoutContextDispatch({
@@ -227,8 +229,8 @@ const LayoutObserver: React.FC = () => {
       });
       const Settings = getSettingsSingletonInstance();
       updateSettings({
-        application: {
-          ...Settings.application,
+        layout: {
+          ...Settings.layout,
           selectedLayout: LAYOUT_TYPE.SMART_LAYOUT,
         },
       }, null, setLocalSettings);
@@ -254,7 +256,52 @@ const LayoutObserver: React.FC = () => {
   }, [videoStream.length]);
 
   useEffect(() => {
-    if (Session.equals('layoutReady', true) && (sidebarContentPanel === PANELS.NONE)) {
+    if (layoutIsReady) {
+      if (isChatEnabled && getFromUserSettings('bbb_show_public_chat_on_login', !window.meetingClientSettings.public.chat.startClosed) && !deviceInfo.isPhone) {
+        const PUBLIC_CHAT_ID = window.meetingClientSettings.public.chat.public_group_id;
+        layoutContextDispatch({
+          type: ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN,
+          value: true,
+        });
+        layoutContextDispatch({
+          type: ACTIONS.SET_SIDEBAR_CONTENT_PANEL,
+          value: PANELS.CHAT,
+        });
+        layoutContextDispatch({
+          type: ACTIONS.SET_ID_CHAT_OPEN,
+          value: PUBLIC_CHAT_ID,
+        });
+      } else {
+        layoutContextDispatch({
+          type: ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN,
+          value: false,
+        });
+      }
+    }
+  }, [isChatEnabled, layoutIsReady]);
+
+  useEffect(() => {
+    if (layoutIsReady && sidebarContentPanel === PANELS.NONE) {
+      if (getFromUserSettings('bbb_show_participants_on_login', window.meetingClientSettings.public.layout.showParticipantsOnLogin) && !deviceInfo.isPhone) {
+        layoutContextDispatch({
+          type: ACTIONS.SET_SIDEBAR_NAVIGATION_IS_OPEN,
+          value: true,
+        });
+      } else {
+        layoutContextDispatch({
+          type: ACTIONS.SET_SIDEBAR_NAVIGATION_IS_OPEN,
+          value: false,
+        });
+        layoutContextDispatch({
+          type: ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN,
+          value: false,
+        });
+      }
+    }
+  }, [layoutIsReady]);
+
+  useEffect(() => {
+    if (Session.equals('layoutReady', true)) {
       if (!checkedUserSettings.current) {
         const Settings = getSettingsSingletonInstance();
         Settings.save(setLocalSettings);
@@ -307,6 +354,10 @@ const LayoutObserver: React.FC = () => {
         }
 
         checkedUserSettings.current = true;
+      }
+
+      if (!layoutIsReady) {
+        setLayoutIsReady(true);
       }
     }
   });

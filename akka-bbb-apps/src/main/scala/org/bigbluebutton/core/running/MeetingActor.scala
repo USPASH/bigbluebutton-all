@@ -748,7 +748,7 @@ class MeetingActor(
         updateUserLastActivity(m.header.userId)
 
       // Plugin
-      case m: PluginDataChannelPushEntryMsg    => pluginHdlrs.handle(m, state, liveMeeting)
+      case m: PluginDataChannelPushEntryMsg    => pluginHdlrs.handle(m, state, liveMeeting, msgBus)
       case m: PluginDataChannelReplaceEntryMsg => pluginHdlrs.handle(m, state, liveMeeting)
       case m: PluginDataChannelDeleteEntryMsg  => pluginHdlrs.handle(m, state, liveMeeting)
       case m: PluginDataChannelResetMsg        => pluginHdlrs.handle(m, state, liveMeeting)
@@ -831,7 +831,6 @@ class MeetingActor(
 
   private def handleMeetingTasksExecutor(): Unit = {
     clearExpiredReactionEmojis()
-    stopFinishedTimer()
     endTimedOutBreakoutRooms()
   }
 
@@ -847,12 +846,6 @@ class MeetingActor(
           Users2x.setReactionEmoji(liveMeeting.users2x, user.intId, "none", 0)
         }
       }
-    }
-  }
-
-  private def stopFinishedTimer(): Unit = {
-    if (TimerModel.resetTimerIfFinished(liveMeeting.timerModel)) {
-      TimerDAO.update(liveMeeting.props.meetingProp.intId, liveMeeting.timerModel)
     }
   }
 
@@ -1105,7 +1098,7 @@ class MeetingActor(
           "user",
           "app.notification.userLeavePushAlert",
           "Notification for a user leaves the meeting",
-          Vector(s"${u.name}")
+          Map("userName" -> s"${u.name}")
         )
         outGW.send(notifyEvent)
         NotificationDAO.insert(notifyEvent)
