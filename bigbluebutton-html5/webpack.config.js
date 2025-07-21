@@ -133,34 +133,40 @@ if (env === prodEnv) {
   };
 } else {
   config.mode = devEnv;
-  config.devServer = {
-    port: 3000,
-    hot: true,
-    allowedHosts: 'all',
-    client: {
-      overlay: false,
-      webSocketURL: 'auto://0.0.0.0:0/html5client/ws',
+config.devServer = {
+  port: 3000,
+  hot: true,
+  allowedHosts: 'all',
+  historyApiFallback: true,
+  compress: true,
+  client: {
+    overlay: false,
+    webSocketURL: {
+      hostname: 'localhost', // ← غيّره إلى اسم النطاق إن وجد (مثل demo.osbash.com)
+      port: 3000,
+      pathname: '/ws',
+      protocol: 'ws', // ← استخدم 'wss' إذا كنت تستخدم HTTPS
     },
-    setupMiddlewares: (middlewares, devServer) => {
-      if (!devServer) {
-        throw new Error('webpack-dev-server is not defined');
+  },
+  setupMiddlewares: (middlewares, devServer) => {
+    if (!devServer) {
+      throw new Error('webpack-dev-server is not defined');
+    }
+
+    devServer.app.use((req, res, next) => {
+      if (req.method === 'HEAD') {
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('Content-Length', '0');
+        res.end();
+      } else {
+        next();
       }
+    });
 
-      devServer.app.use((req, res, next) => {
-        // the server crashes when it receives HEAD requests, so we need to prevent it
-        if (req.method === 'HEAD') {
-          // console.log(`Request received: ${req.method} ${req.url}`);
-          res.setHeader('Content-Type', 'text/html');
-          res.setHeader('Content-Length', '0');
-          res.end();
-        } else {
-          next();
-        }
-      });
+    return middlewares;
+  },
+};
 
-      return middlewares;
-    },
-  };
 }
 
 module.exports = config;
