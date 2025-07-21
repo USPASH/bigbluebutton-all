@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import ConnectionManager from '/imports/ui/components/connection-manager/component';
 import { createRoot } from 'react-dom/client';
 import SettingsLoader from '/imports/ui/components/settings-loader/component';
@@ -36,6 +36,14 @@ if (
 /* eslint-enable */
 
 const Main: React.FC = () => {
+
+   const [welcome,setWelcome] = useState(false)
+  useState(()=>{
+    if(!welcome){
+      alert('Welcome in dev mode')
+      setWelcome(true)
+    }
+  },[])
   return (
     <SettingsLoader>
       <CustomUsersSettings>
