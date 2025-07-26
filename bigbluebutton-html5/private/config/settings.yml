@@ -11,7 +11,7 @@ public:
     listenOnlyMode: true
     forceListenOnly: false
     # Skips the echo test when connecting with microphone.
-    skipCheck: false
+    skipCheck: true
     # Skips the echo test when connecting with microphone right after user
     # joins the room the first time. Subsequent joins to microphone won't
     # have echo test skipped, for example if user leaves and joins the mic
@@ -27,11 +27,11 @@ public:
     enableDynamicAudioDeviceSelection: true
     #
     skipEchoTestIfPreviousDevice: false
-    clientTitle: BigBlueButton
-    appName: BigBlueButton HTML5 Client
+    clientTitle: Jehat
+    appName: Jehat Video Conference
     bbbServerVersion: HTML5_FULL_BBB_VERSION
     displayBbbServerVersion: true
-    copyright: '©2025 BigBlueButton Inc.'
+    copyright: '©2025 Jehat Inc.'
     html5ClientBuild: HTML5_CLIENT_VERSION
     helpLink: https://bigbluebutton.org/html5/
     delayForUnmountOfSharedNote: 120000
@@ -105,6 +105,7 @@ public:
         # Gladia: https://docs.gladia.io/chapters/speech-to-text-api/pages/languages#supported-languages
         available:
         # - de-DE
+          - ar
           - en-US
           - es-ES
           - fr-FR
@@ -124,7 +125,7 @@ public:
         # browserLanguage: to set browser language
         # [en-US, es-ES, pt-BR,...]: to set a specific locale
         # disabled: to set disabled
-        locale: disabled
+        locale: browserLanguage
     mutedAlert:
       enabled: true
       interval: 200
@@ -143,7 +144,7 @@ public:
       captureWhiteboardByDefault: false
       captureSharedNotesByDefault: false
       sendInvitationToAssignedModeratorsByDefault: false
-      breakoutRoomLimit: 16
+      breakoutRoomLimit: 2
       allowPresentationManagementInBreakouts: true
     showAllAvailableLocales: true
     # Show "Audio Filters for Microphone" option in settings menu.
@@ -184,7 +185,7 @@ public:
     # allowed values:
     # 'session' -> settings are stored in browser sessionStorage
     # 'local' -> settings are stored in browser localStorage
-    userSettingsStorage: session
+    userSettingsStorage: local
     defaultSettings:
       application:
         selectedLayout: 'custom'
@@ -203,12 +204,12 @@ public:
         wakeLock: true
         paginationEnabled: true
         whiteboardToolbarAutoHide: false
-        pushToTalkEnabled: false
+        pushToTalkEnabled: true
         autoCloseReactionsBar: true
         directLeaveButton: true
         darkTheme: false
         # set a custom color for talking highlight in webcam
-        webcamBorderHighlightColor: []
+        webcamBorderHighlightColor: [0, 84, 97]
         # fallbackLocale: if the locale the client is loaded in does not have a
         # translation a string, it will use the translation from the locale
         # specified in fallbackLocale. Note that fallbackLocale should be a

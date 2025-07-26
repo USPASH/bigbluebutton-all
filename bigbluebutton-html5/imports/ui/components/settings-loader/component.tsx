@@ -69,6 +69,9 @@ const SettingsLoader: React.FC<SettingsLoaderProps> = (props) => {
           .then((data: Response) => {
             clearTimeout(timeoutRef.current);
             const settings = data?.meeting_clientSettings[0].clientSettingsJson;
+
+            console.log('[SettingsLoader] Loaded meetingClientSettings:', settings);
+
             window.meetingClientSettings = JSON.parse(JSON.stringify(settings));
             setMeetingSettings(settings);
             setLoading(false);
