@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Bowser from 'bowser';
 import { isBrowserSupported } from 'livekit-client';
 import Session from '/imports/ui/services/storage/in-memory';
@@ -24,45 +24,76 @@ import PluginTopLevelManager from '/imports/ui/components/plugin-top-level-manag
 const connectionTimeout = 60000;
 const MESSAGE_TIMEOUT = 3000;
 
-const PresenceManager: React.FC<any> = (props) => {
-  const {
-    authToken,
-    children,
-    logoutUrl,
-    meetingId,
-    meetingName,
-    userName,
-    extId,
-    userId,
-    joinErrorCode,
-    joinErrorMessage,
-    joined,
-    meetingEnded,
-    endedReasonCode,
-    endedBy,
-    ejectReasonCode,
-    bannerColor,
-    bannerText,
-    customLogoUrl,
-    customDarkLogoUrl,
-    loggedOut,
-    guestLobbyMessage,
-    guestStatus,
-    positionInWaitingQueue,
-    isSupportedBrowser,
-    hasWebrtcSupport,
-  } = props;
+interface PresenceManagerContainerProps {
+    children: React.ReactNode;
+  }
 
-  const [allowToRender, setAllowToRender] = useState(false);
+interface PresenceManagerProps extends PresenceManagerContainerProps {
+    authToken: string;
+    logoutUrl: string;
+    meetingId: string;
+    meetingName: string;
+    userName: string;
+    extId: string;
+    userId: string;
+    joinErrorCode: string;
+    joinErrorMessage: string;
+    joined: boolean;
+    meetingEnded: boolean;
+    endedReasonCode: string;
+    endedBy: string;
+    ejectReasonCode: string;
+    bannerColor: string;
+    bannerText: string;
+    customLogoUrl: string;
+    customDarkLogoUrl: string;
+    loggedOut: boolean;
+    guestStatus: string;
+    guestLobbyMessage: string | null;
+    positionInWaitingQueue: number | null;
+    isSupportedBrowser: boolean | undefined;
+    hasWebrtcSupport: boolean;
+}
+
+const PresenceManager: React.FC<PresenceManagerProps> = ({
+  authToken,
+  children,
+  logoutUrl,
+  meetingId,
+  meetingName,
+  userName,
+  extId,
+  userId,
+  joinErrorCode,
+  joinErrorMessage,
+  joined,
+  meetingEnded,
+  endedReasonCode,
+  endedBy,
+  ejectReasonCode,
+  bannerColor,
+  bannerText,
+  customLogoUrl,
+  customDarkLogoUrl,
+  loggedOut,
+  guestLobbyMessage,
+  guestStatus,
+  positionInWaitingQueue,
+  isSupportedBrowser,
+  hasWebrtcSupport,
+}) => {
+  const [allowToRender, setAllowToRender] = React.useState(false);
   const [dispatchUserJoin] = useMutation(userJoinMutation);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
   const loadingContextInfo = useContext(LoadingContext);
   const [isGuestAllowed, setIsGuestAllowed] = useState(guestStatus === GUEST_STATUSES.ALLOW);
 
   useEffect(() => {
     const allowed = guestStatus === GUEST_STATUSES.ALLOW;
     if (allowed) {
-      setTimeout(() => setIsGuestAllowed(true), MESSAGE_TIMEOUT);
+      setTimeout(() => {
+        setIsGuestAllowed(true);
+      }, MESSAGE_TIMEOUT);
     } else {
       setIsGuestAllowed(false);
     }
@@ -71,17 +102,25 @@ const PresenceManager: React.FC<any> = (props) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionToken = urlParams.get('sessionToken') as string;
-
-    console.log('[PresenceManager] Session token:', sessionToken);
-
-    const auth = {
-      meetingId, userId, authToken, logoutUrl, sessionToken, userName, extId, meetingName,
-    };
-    console.log('[PresenceManager] Auth data:', auth);
-
-    setAuthData(auth);
+    setAuthData({
+      meetingId,
+      userId,
+      authToken,
+      logoutUrl,
+      sessionToken,
+      userName,
+      extId,
+      meetingName,
+    });
     setUserDataToSessionStorage({
-      ...auth,
+      meetingId,
+      userId,
+      authToken,
+      logoutUrl,
+      sessionToken,
+      userName,
+      extId,
+      meetingName,
       customLogoUrl,
       customDarkLogoUrl,
     });
@@ -100,13 +139,11 @@ const PresenceManager: React.FC<any> = (props) => {
     if (bannerColor || bannerText) {
       Session.setItem('bannerText', bannerText);
       Session.setItem('bannerColor', bannerColor);
-      console.log('[PresenceManager] Banner set:', { bannerText, bannerColor });
     }
   }, [bannerColor, bannerText]);
 
   useEffect(() => {
     if (authToken && !joined && isGuestAllowed) {
-      console.log('[PresenceManager] Dispatching userJoin mutation');
       dispatchUserJoin({
         variables: {
           authToken,
@@ -120,17 +157,16 @@ const PresenceManager: React.FC<any> = (props) => {
   useEffect(() => {
     if (joined) {
       clearTimeout(timeoutRef.current);
-      console.log('[PresenceManager] User joined, allowing render');
       setAllowToRender(true);
     }
   }, [joined]);
 
   useEffect(() => {
     if (joinErrorCode) {
-      console.warn('[PresenceManager] Join error:', joinErrorCode, joinErrorMessage);
       loadingContextInfo.setLoading(false);
     }
-  }, [joinErrorCode, joinErrorMessage]);
+  },
+  [joinErrorCode, joinErrorMessage]);
 
   const errorCode = loggedOut ? 'user_logged_out_reason' : joinErrorCode || ejectReasonCode;
 
@@ -139,34 +175,135 @@ const PresenceManager: React.FC<any> = (props) => {
     const message = isSupportedBrowser === false
       ? 'The browser is not supported or is using an outdated version.'
       : 'WebRTC is not supported in this browser.';
-    console.warn('[PresenceManager] Unsupported browser:', reason);
+    logger.warn({
+      logCode: 'unsupported_browser',
+      extraInfo: {
+        reason,
+      },
+    }, message);
+
     return <Legacy setLoading={loadingContextInfo.setLoading} />;
   }
 
   const userCurrentlyInMeeting = allowToRender && !(meetingEnded || joinErrorCode || ejectReasonCode || loggedOut);
-  console.log('[PresenceManager] Render state:', { userCurrentlyInMeeting });
 
   return (
     <>
-      <PluginTopLevelManager currentUserCurrentlyInMeeting={userCurrentlyInMeeting} />
-      {userCurrentlyInMeeting && children}
-      {(meetingEnded || joinErrorCode || ejectReasonCode || loggedOut) && (
-        <MeetingEndedContainer
-          meetingEndedCode={endedReasonCode}
-          endedBy={endedBy}
-          joinErrorCode={errorCode}
-        />
-      )}
-      {!isGuestAllowed && !(meetingEnded || joinErrorCode || ejectReasonCode || loggedOut) && (
-        <GuestWaitContainer
-          guestLobbyMessage={guestLobbyMessage}
-          guestStatus={guestStatus}
-          logoutUrl={logoutUrl}
-          positionInWaitingQueue={positionInWaitingQueue}
-        />
-      )}
+      <PluginTopLevelManager
+        currentUserCurrentlyInMeeting={userCurrentlyInMeeting}
+      />
+      {userCurrentlyInMeeting ? children : null}
+      {
+        meetingEnded || joinErrorCode || ejectReasonCode || loggedOut
+          ? (
+            <MeetingEndedContainer
+              meetingEndedCode={endedReasonCode}
+              endedBy={endedBy}
+              joinErrorCode={errorCode}
+            />
+          )
+          : null
+      }
+      {
+        !isGuestAllowed && !(meetingEnded || joinErrorCode || ejectReasonCode || loggedOut)
+          ? (
+            <GuestWaitContainer
+              guestLobbyMessage={guestLobbyMessage}
+              guestStatus={guestStatus}
+              logoutUrl={logoutUrl}
+              positionInWaitingQueue={positionInWaitingQueue}
+            />
+          )
+          : null
+      }
     </>
   );
 };
 
-export default PresenceManager;
+const PresenceManagerContainer: React.FC<PresenceManagerContainerProps> = ({ children }) => {
+  const { loading, error, data } = useDeduplicatedSubscription<GetUserCurrentResponse>(getUserCurrent);
+
+  const {
+    loading: userInfoLoading,
+    error: userInfoError,
+    data: userInfoData,
+  } = useQuery<GetUserInfoResponse>(getUserInfo);
+
+  const loadingContextInfo = useContext(LoadingContext);
+  if (loading || userInfoLoading) return null;
+  if (error || userInfoError) {
+    loadingContextInfo.setLoading(false);
+    logger.debug(`Error on user authentication: ${error}`);
+  }
+
+  if (
+    !userInfoLoading
+    && (userInfoData?.meeting.length === 0 && userInfoData?.user_current.length === 0)
+  ) {
+    throw new Error('Meeting Not Found.', { cause: 'meeting_not_found' });
+  }
+
+  if (!data || data.user_current.length === 0) return null;
+  if (!userInfoData
+      || userInfoData.meeting.length === 0
+      || userInfoData.user_current.length === 0) return null;
+  const {
+    authToken,
+    joinErrorCode,
+    joinErrorMessage,
+    joined,
+    ejectReasonCode,
+    meeting,
+    loggedOut,
+    guestStatusDetails,
+    guestStatus,
+  } = data.user_current[0];
+  const {
+    logoutUrl,
+    meetingId,
+    name: meetingName,
+    bannerColor,
+    bannerText,
+    customLogoUrl,
+    customDarkLogoUrl,
+  } = userInfoData.meeting[0];
+  const { extId, name: userName, userId } = userInfoData.user_current[0];
+
+  const MIN_BROWSER_CONFIG = window.meetingClientSettings.public.minBrowserVersions;
+  const userAgent = window.navigator?.userAgent;
+  const isSupportedBrowser = Bowser.getParser(userAgent).satisfies(MIN_BROWSER_CONFIG);
+  const hasWebrtcSupport = isBrowserSupported();
+
+  return (
+    <PresenceManager
+      authToken={authToken}
+      logoutUrl={logoutUrl}
+      meetingId={meetingId}
+      meetingName={meetingName}
+      userName={userName}
+      extId={extId}
+      userId={userId}
+      joined={joined}
+      joinErrorCode={joinErrorCode}
+      joinErrorMessage={joinErrorMessage}
+      meetingEnded={meeting.ended}
+      endedReasonCode={meeting.endedReasonCode}
+      endedBy={meeting.endedByUserName}
+      ejectReasonCode={ejectReasonCode}
+      bannerColor={bannerColor}
+      bannerText={bannerText}
+      loggedOut={loggedOut}
+      customLogoUrl={customLogoUrl}
+      customDarkLogoUrl={customDarkLogoUrl}
+      guestLobbyMessage={guestStatusDetails?.guestLobbyMessage ?? null}
+      positionInWaitingQueue={guestStatusDetails?.positionInWaitingQueue ?? null}
+      guestStatus={guestStatus}
+      isSupportedBrowser={isSupportedBrowser}
+      hasWebrtcSupport={hasWebrtcSupport}
+    >
+      {children}
+    </PresenceManager>
+  );
+};
+
+export default PresenceManagerContainer;
