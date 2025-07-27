@@ -69,7 +69,7 @@ const CustomUsersSettings: React.FC<CustomUsersSettingsProps> = ({
             });
 
             // ✅ Log full parsed metadata list
-            console.log('[CustomUsersSettings] Raw user_metadata:', data.user_metadata);
+            console.log('[CustomUsersSettings] Raw user_metadata:', data);
             console.log('[CustomUsersSettings] Parsed user settings:', filteredData);
 
             const userSettings = filteredData.reduce((acc, item) => Object.assign(acc, item), {});
