@@ -56,6 +56,8 @@ const SettingsLoader: React.FC<SettingsLoaderProps> = (props) => {
 
     BBBWeb.index(controller.signal)
       .then(({ data }) => {
+        console.log('[SettingsLoader] Meeting data from BBBWeb.index():', data);
+
         const url = new URL(`${data.graphqlApiUrl}/clientSettings`);
         fetch(url, {
           method: 'get',
