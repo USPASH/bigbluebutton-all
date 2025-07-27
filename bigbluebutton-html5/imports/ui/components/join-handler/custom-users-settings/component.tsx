@@ -59,6 +59,7 @@ console.log('Controller',controller,controller.signal)
           .then((resp) => resp.json())
           .then((data: Response) => {
             const filteredData = data.user_metadata.map((uc) => {
+              // console.log(,uc)
               const { parameter, value } = uc;
               console.log("BBBWeb" , uc);
               let parsedValue: string | boolean | string[] = '';
