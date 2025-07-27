@@ -74,12 +74,13 @@ class ErrorBoundary extends Component {
         mediaElement.srcObject = null;
       }
       const apolloClient = apolloContextHolder.getClient();
-
+      console.log('apolloClient',apolloClient)
       if (apolloClient) {
         apolloClient.stop();
       }
 
       const ws = apolloContextHolder.getLink();
+      console.log('ws',ws)
       if (ws) {
         // delay to termintate the connection, for user receive the end eject message
         setTimeout(() => {

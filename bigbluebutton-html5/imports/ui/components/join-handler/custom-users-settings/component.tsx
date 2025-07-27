@@ -44,7 +44,7 @@ const CustomUsersSettings: React.FC<CustomUsersSettingsProps> = ({
       setError('Missing session token');
       return undefined;
     }
-
+console.log('Controller',controller,controller.signal)
     BBBWeb.index(controller.signal)
       .then(({ data }) => {
         const url = new URL(`${data.graphqlApiUrl}/userMetadata`);
@@ -58,25 +58,17 @@ const CustomUsersSettings: React.FC<CustomUsersSettingsProps> = ({
         })
           .then((resp) => resp.json())
           .then((data: Response) => {
-            const filteredData = data.user_metadata.map(({ parameter, value }) => {
+            const filteredData = data.user_metadata.map((uc) => {
+              const { parameter, value } = uc;
+              console.log("BBBWeb" , uc);
               let parsedValue: string | boolean | string[] = '';
               try {
-                parsedValue = JSON.parse(value);
+                parsedValue = JSON.parse(uc.value);
               } catch {
                 parsedValue = value;
               }
               return { [parameter]: parsedValue };
             });
-
-            // ✅ Log full parsed metadata list
-            console.log('[CustomUsersSettings] Raw user_metadata:', data);
-            console.log('[CustomUsersSettings] Parsed user settings:', filteredData);
-
-            const userSettings = filteredData.reduce((acc, item) => Object.assign(acc, item), {});
-            console.log('[CustomUsersSettings] Final userSettings object:', userSettings);
-
-            setUserSettings(userSettings);
-
             setUserSettings(filteredData.reduce((acc, item) => Object.assign(acc, item), {}));
             setFetched(true);
             if (timeoutRef.current) {
