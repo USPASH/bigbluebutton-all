@@ -125,7 +125,7 @@ public:
         # browserLanguage: to set browser language
         # [en-US, es-ES, pt-BR,...]: to set a specific locale
         # disabled: to set disabled
-        locale: browserLanguage
+        locale: ar
     mutedAlert:
       enabled: true
       interval: 200
