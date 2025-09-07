@@ -17,6 +17,7 @@ import RaiseHandButtonContainer from '/imports/ui/components/actions-bar/raise-h
 import Selector from '/imports/ui/components/common/selector/component';
 import ToggleGroup from '/imports/ui/components/common/toggle-group/component';
 import Separator from '/imports/ui/components/common/separator/component';
+import LeaveMeetingButtonContainer from '../nav-bar/leave-meeting-button/container';
 
 const intlMessages = defineMessages({
   actionsBarLabel: {
@@ -253,6 +254,10 @@ class ActionsBar extends PureComponent {
                   />
                 )
                 : null}
+
+            </Styled.Gap>
+            <Styled.Gap>
+              <LeaveMeetingButtonContainer amIModerator = {amIModerator}/>
             </Styled.Gap>
           </Styled.Right>
         </Styled.ActionsBar>

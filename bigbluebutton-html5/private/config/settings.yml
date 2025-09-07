@@ -30,7 +30,7 @@ public:
     clientTitle: Jehat
     appName: Jehat Video Conference
     bbbServerVersion: HTML5_FULL_BBB_VERSION
-    displayBbbServerVersion: true
+    displayBbbServerVersion: false
     copyright: '©2025 Jehat Inc.'
     html5ClientBuild: HTML5_CLIENT_VERSION
     helpLink: https://bigbluebutton.org/html5/
@@ -93,10 +93,10 @@ public:
     # speech API, which involves sending voice data to third-party servers!
     # https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API#speech_recognition
     audioCaptions:
-      enabled: false
-      alwaysVisible: false
+      enabled: true
+      alwaysVisible: true
       # mobile: <Boolean> - controls speech transcription availability on mobile
-      mobile: false
+      mobile: true
       # provider: [webspeech, vosk, gladia]
       provider: webspeech
       language:
@@ -357,7 +357,7 @@ public:
       # subscribe reattempt increases the reconnection timer up to this
       maxTimeout: 60000
     screenshare:
-      showButtonForNonPresenters: false
+      showButtonForNonPresenters: true
       # Whether volume control should be allowed if screen sharing has audio
       enableVolumeControl: true
       # Experimental. True is the canonical behavior. Flip to false to reverse
@@ -1052,8 +1052,8 @@ public:
   whiteboard:
     annotationsQueueProcessInterval: 60
     cursorInterval: 150
-    allowInfiniteWhiteboard: false
-    allowInfiniteWhiteboardInBreakouts: false
+    allowInfiniteWhiteboard: true
+    allowInfiniteWhiteboardInBreakouts: true
     pointerDiameter: 5
     maxStickyNoteLength: 1000
     # limit number of annotations per slide
