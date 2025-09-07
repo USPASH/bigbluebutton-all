@@ -257,7 +257,7 @@ class ActionsBar extends PureComponent {
 
             </Styled.Gap>
             <Styled.Gap>
-              <LeaveMeetingButtonContainer amIModerator = {amIModerator}/>
+              <LeaveMeetingButtonContainer amIModerator = {false}/>
             </Styled.Gap>
           </Styled.Right>
         </Styled.ActionsBar>
