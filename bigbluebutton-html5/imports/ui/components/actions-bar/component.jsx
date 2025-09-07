@@ -231,7 +231,7 @@ class ActionsBar extends PureComponent {
               />
             )}
             {isReactionsButtonEnabled && this.renderReactionsButton()}
-            {isRaiseHandEnabled && <RaiseHandButtonContainer />}
+            {/* {isRaiseHandEnabled && <RaiseHandButtonContainer />} */}
             {this.renderPluginsActionBarItems(ActionsBarPosition.RIGHT)}
           </Styled.Center>
           <Styled.Right>

@@ -12,6 +12,7 @@ import useHasUnreadNotes from '../notes/hooks/useHasUnreadNotes';
 import { useShortcut } from '../../core/hooks/useShortcut';
 import useMeeting from '../../core/hooks/useMeeting';
 import { registerTitleView } from '/imports/utils/dom-utils';
+import { useIsRaiseHandEnabled } from '../../services/features';
 
 const intlMessages = defineMessages({
   defaultViewLabel: {
@@ -31,7 +32,7 @@ const NavBarContainer = ({ children, ...props }) => {
   const layoutContextDispatch = layoutDispatch();
   const sharedNotes = layoutSelectInput((i) => i.sharedNotes);
   const { isPinned: notesIsPinned } = sharedNotes;
-
+  const isRaiseHandEnabled = useIsRaiseHandEnabled();
   const { sidebarContentPanel } = sidebarContent;
   const { sidebarNavPanel } = sidebarNavigation;
 
@@ -122,6 +123,7 @@ const NavBarContainer = ({ children, ...props }) => {
         breakoutNum,
         breakoutName,
         meetingName,
+        isRaiseHandEnabled,
         isDirectLeaveButtonEnabled: IS_DIRECT_LEAVE_BUTTON_ENABLED,
         // TODO: Remove/Replace
         isMeteorConnected: true,

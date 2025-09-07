@@ -21,7 +21,6 @@ import Tooltip from '/imports/ui/components/common/tooltip/component';
 import SessionDetailsModal from '/imports/ui/components/session-details/component';
 import Icon from '/imports/ui/components/common/icon/icon-ts/component';
 import getStorageSingletonInstance from '../../services/storage';
-
 const intlMessages = defineMessages({
   toggleUserListLabel: {
     id: 'app.navBar.userListToggleBtnLabel',
@@ -189,6 +188,7 @@ class NavBar extends Component {
       breakoutNum,
       breakoutName,
       meetingName,
+      // isRaiseHandEnabled,
     } = this.props;
 
     if (breakoutNum && breakoutNum > 0) {
@@ -317,6 +317,7 @@ class NavBar extends Component {
       isDirectLeaveButtonEnabled,
       isMeteorConnected,
       hideTopRow,
+      isRaiseHandEnabled
     } = this.props;
 
     const { isModalOpen } = this.state;
@@ -416,6 +417,8 @@ class NavBar extends Component {
               {renderPluginItems(rightPluginItems)}
               {ConnectionStatusService.isEnabled() ? <ConnectionStatusButton /> : null}
               {ConnectionStatusService.isEnabled() ? <ConnectionStatus /> : null}
+              {isRaiseHandEnabled && <RaiseHandButtonContainer />}
+              
               {isDirectLeaveButtonEnabled && isMeteorConnected
                 ? <LeaveMeetingButtonContainer amIModerator={amIModerator} /> : null}
               <OptionsDropdownContainer
