@@ -232,6 +232,8 @@ class ActionsBar extends PureComponent {
             )}
             {isReactionsButtonEnabled && this.renderReactionsButton()}
             {/* {isRaiseHandEnabled && <RaiseHandButtonContainer />} */}
+              <LeaveMeetingButtonContainer amIModerator = {'false'}/>
+
             {this.renderPluginsActionBarItems(ActionsBarPosition.RIGHT)}
           </Styled.Center>
           <Styled.Right>
@@ -256,9 +258,7 @@ class ActionsBar extends PureComponent {
                 : null}
 
             </Styled.Gap>
-            <Styled.Gap>
-              <LeaveMeetingButtonContainer amIModerator = {false}/>
-            </Styled.Gap>
+            
           </Styled.Right>
         </Styled.ActionsBar>
       </Styled.ActionsBarWrapper>

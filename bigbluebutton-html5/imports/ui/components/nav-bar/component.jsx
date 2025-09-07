@@ -421,7 +421,7 @@ class NavBar extends Component {
               {ConnectionStatusService.isEnabled() ? <ConnectionStatus /> : null}
               {isRaiseHandEnabled && <RaiseHandButtonContainer />}
               
-              {isDirectLeaveButtonEnabled && isMeteorConnected
+              {isDirectLeaveButtonEnabled && isMeteorConnected && amIModerator
                 ? <LeaveMeetingButtonContainer amIModerator={amIModerator} /> : null}
               <OptionsDropdownContainer
                 amIModerator={amIModerator}
