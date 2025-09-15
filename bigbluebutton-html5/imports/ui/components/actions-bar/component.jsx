@@ -232,7 +232,7 @@ class ActionsBar extends PureComponent {
             )}
             {isReactionsButtonEnabled && this.renderReactionsButton()}
             {/* {isRaiseHandEnabled && <RaiseHandButtonContainer />} */}
-              <LeaveMeetingButtonContainer amIModerator = {'false'}/>
+              <LeaveMeetingButtonContainer amIModerator = {false}/>
 
             {this.renderPluginsActionBarItems(ActionsBarPosition.RIGHT)}
           </Styled.Center>
