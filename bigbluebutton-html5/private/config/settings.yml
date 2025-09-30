@@ -1183,7 +1183,7 @@ private:
   analytics:
     includeChat: true
   app:
-    host: 127.0.0.1
+    host: https://b.jehat.sa
     localesUrl: /locale-list
     pencilChunkLength: 100
     loadSlidesFromHttpAlways: false
