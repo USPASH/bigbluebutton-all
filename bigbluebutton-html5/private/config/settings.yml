@@ -11,7 +11,7 @@ public:
     listenOnlyMode: true
     forceListenOnly: false
     # Skips the echo test when connecting with microphone.
-    skipCheck: true
+    skipCheck: false
     # Skips the echo test when connecting with microphone right after user
     # joins the room the first time. Subsequent joins to microphone won't
     # have echo test skipped, for example if user leaves and joins the mic
@@ -27,11 +27,11 @@ public:
     enableDynamicAudioDeviceSelection: true
     #
     skipEchoTestIfPreviousDevice: false
-    clientTitle: Jehat
-    appName: Jehat Video Conference
+    clientTitle: BigBlueButton
+    appName: BigBlueButton HTML5 Client
     bbbServerVersion: HTML5_FULL_BBB_VERSION
-    displayBbbServerVersion: false
-    copyright: '©2025 Jehat Inc.'
+    displayBbbServerVersion: true
+    copyright: '©2025 BigBlueButton Inc.'
     html5ClientBuild: HTML5_CLIENT_VERSION
     helpLink: https://bigbluebutton.org/html5/
     delayForUnmountOfSharedNote: 120000
@@ -39,7 +39,6 @@ public:
       enabled: true
       iosAppStoreUrl: 'https://apps.apple.com/us/app/bigbluebutton-tablet/id1641156756'
       iosAppUrlScheme: 'bigbluebutton-tablet'
-    lockOnJoin: true
     cdn: ''
     basename: '/html5client'
     # the base location of the BBB API. If you use a cluster setup with a load
@@ -93,10 +92,10 @@ public:
     # speech API, which involves sending voice data to third-party servers!
     # https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API#speech_recognition
     audioCaptions:
-      enabled: true
-      alwaysVisible: true
+      enabled: false
+      alwaysVisible: false
       # mobile: <Boolean> - controls speech transcription availability on mobile
-      mobile: true
+      mobile: false
       # provider: [webspeech, vosk, gladia]
       provider: webspeech
       language:
@@ -105,7 +104,6 @@ public:
         # Gladia: https://docs.gladia.io/chapters/speech-to-text-api/pages/languages#supported-languages
         available:
         # - de-DE
-          - ar
           - en-US
           - es-ES
           - fr-FR
@@ -125,7 +123,7 @@ public:
         # browserLanguage: to set browser language
         # [en-US, es-ES, pt-BR,...]: to set a specific locale
         # disabled: to set disabled
-        locale: ar
+        locale: disabled
     mutedAlert:
       enabled: true
       interval: 200
@@ -144,7 +142,7 @@ public:
       captureWhiteboardByDefault: false
       captureSharedNotesByDefault: false
       sendInvitationToAssignedModeratorsByDefault: false
-      breakoutRoomLimit: 2
+      breakoutRoomLimit: 16
       allowPresentationManagementInBreakouts: true
     showAllAvailableLocales: true
     # Show "Audio Filters for Microphone" option in settings menu.
@@ -185,7 +183,7 @@ public:
     # allowed values:
     # 'session' -> settings are stored in browser sessionStorage
     # 'local' -> settings are stored in browser localStorage
-    userSettingsStorage: local
+    userSettingsStorage: session
     defaultSettings:
       application:
         selectedLayout: 'custom'
@@ -201,15 +199,16 @@ public:
         raiseHandPushAlerts: true
         guestWaitingAudioAlerts: true
         guestWaitingPushAlerts: true
+        muteUnmuteAudioAlerts: true
         wakeLock: true
         paginationEnabled: true
         whiteboardToolbarAutoHide: false
-        pushToTalkEnabled: true
+        pushToTalkEnabled: false
         autoCloseReactionsBar: true
         directLeaveButton: true
         darkTheme: false
         # set a custom color for talking highlight in webcam
-        webcamBorderHighlightColor: [0, 84, 97]
+        webcamBorderHighlightColor: []
         # fallbackLocale: if the locale the client is loaded in does not have a
         # translation a string, it will use the translation from the locale
         # specified in fallbackLocale. Note that fallbackLocale should be a
@@ -357,7 +356,7 @@ public:
       # subscribe reattempt increases the reconnection timer up to this
       maxTimeout: 60000
     screenshare:
-      showButtonForNonPresenters: true
+      showButtonForNonPresenters: false
       # Whether volume control should be allowed if screen sharing has audio
       enableVolumeControl: true
       # Experimental. True is the canonical behavior. Flip to false to reverse
@@ -586,7 +585,7 @@ public:
     chatMessage: true
     quickPollConfirmationStep: true
     quiz:
-      enabled: false
+      enabled: true
       quickPollCorrectAnswerSuffix: "__"
   captions:
     enabled: true
@@ -1052,14 +1051,17 @@ public:
   whiteboard:
     annotationsQueueProcessInterval: 60
     cursorInterval: 150
-    allowInfiniteWhiteboard: true
-    allowInfiniteWhiteboardInBreakouts: true
+    allowInfiniteWhiteboard: false
+    allowInfiniteWhiteboardInBreakouts: false
     pointerDiameter: 5
     maxStickyNoteLength: 1000
     # limit number of annotations per slide
     maxNumberOfAnnotations: 300
     # Limit the number of users who can interact with the whiteboard
     maxNumberOfActiveUsers: 25
+    # This is the number of times we can press undo (plus 100 providing a safe margin for some shapes with extra entries)
+    # default value is 400, adjusted for maxNumberOfAnnotations being 300
+    maxHistoryStackSize: 400
     lockToolbarTools: false
     annotations:
       status:
@@ -1149,6 +1151,7 @@ public:
     locales: ['ar', 'ca', 'cs', 'da', 'de', 'en', 'es', 'fa', 'fi', 'fr', 'gl', 'he', 'hi-in', 'hu', 'it', 'ja', 'ko-kr', 'ku', 'main', 'my', 'ne', 'no', 'pl', 'pt-br', 'pt-pt', 'ro', 'ru', 'sv', 'te', 'th', 'tr', 'uk', 'vi', 'zh-cn', 'zh-tw']
   clientLog:
     console:
+      enableRuntimeErrorLogging: false
       enabled: true
       level: debug
     external:
@@ -1166,24 +1169,18 @@ public:
     showThumbnails: true
     imagesPath: /resources/images/virtual-backgrounds/
     thumbnailsPath: /resources/images/virtual-backgrounds/thumbnails/
+    # willReadFrequently: Defines the optimization hint for the virtual background canvas.
+    # If commented out (default), the browser decides the best strategy.
+    #willReadFrequently: true
     fileNames:
       - home.jpg
       - coffeeshop.jpg
       - board.jpg
-  minBrowserVersions:
-    safari: ">=14"
-    chrome: ">=87"
-    firefox: ">=80"
-    edge: ">=85"
-    miui: "<0"
-    mobile:
-      safari: ">=14"
-      chrome: ">=87"
 private:
   analytics:
     includeChat: true
   app:
-    host: https://b.jehat.sa
+    host: 127.0.0.1
     localesUrl: /locale-list
     pencilChunkLength: 100
     loadSlidesFromHttpAlways: false
